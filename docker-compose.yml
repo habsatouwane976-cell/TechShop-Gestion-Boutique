@@ -34,7 +34,6 @@ services:
       ALLOWED_HOSTS: localhost,127.0.0.1,backend
     volumes:
       - ./backend:/app
-      - media_data:/app/media
       - static_data:/app/staticfiles
     ports:
       - "8000:8000"
@@ -59,5 +58,4 @@ services:
 
 volumes:
   postgres_data:
-  media_data:
   static_data:
