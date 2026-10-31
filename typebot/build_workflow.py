@@ -135,11 +135,13 @@ def build():
 
     # --- Liste et fiche produit -----------------------------------------
     g = f.group('Produits - chargement', 2300, -150)
-    f.set_var(g, 'nb', text='0')
+    f.set_var(g, 'nb', text='erreur')   # reste « erreur » si l'API ne répond pas correctement
     f.http(g, 'GET', '{{api_url}}/api/chatbot/products/?category={{cat_id}}&max_price={{budget}}&q={{recherche_q}}', [
-        ('produits', 'data.results'), ('nb', 'String(data.count)'),
+        ('produits', 'data.results'),
+        ('nb', 'data && data.count !== undefined ? String(data.count) : "erreur"'),
     ])
-    f.branch(g, [('nb', 'Equal to', '0', 'Produits - aucun')], 'Produits - début')
+    f.branch(g, [('nb', 'Equal to', 'erreur', 'Erreur - indisponible'),
+                 ('nb', 'Equal to', '0', 'Produits - aucun')], 'Produits - début')
 
     g = f.group('Produits - aucun', 2700, -300)
     f.say(g, "Aucun produit disponible ne correspond à votre demande.")
