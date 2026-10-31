@@ -14,6 +14,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail"
 
 // Accueil boutique
 import HomePage from "./pages/home/HomePage"
+import ChatbotWidget from "./components/common/ChatbotWidget"
 
 // Client
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"))
@@ -91,6 +92,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ChatbotWidget />
       <Suspense fallback={<div className="p-6"><DashboardSkeleton /></div>}>
       <Routes>
 

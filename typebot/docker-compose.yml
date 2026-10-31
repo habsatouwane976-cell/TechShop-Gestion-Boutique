@@ -1,0 +1,80 @@
+# Typebot en local pour l'assistant TechShop.
+# Builder : http://localhost:8080  |  Viewer : http://localhost:8091  |  Mails : http://localhost:8025
+x-typebot-common: &typebot-common
+  restart: unless-stopped
+  depends_on:
+    typebot-redis:
+      condition: service_healthy
+    typebot-db:
+      condition: service_healthy
+    mailpit:
+      condition: service_started
+  networks:
+    - typebot-network
+  env_file: .env
+  environment:
+    REDIS_URL: redis://typebot-redis:6379
+  extra_hosts:
+    # Permet aux conteneurs d'appeler l'API Django lancée sur la machine hôte.
+    - "host.docker.internal:host-gateway"
+
+services:
+  typebot-db:
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=typebot
+      - POSTGRES_PASSWORD=typebot
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - typebot-network
+
+  typebot-redis:
+    image: redis:alpine
+    restart: unless-stopped
+    command: --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - redis-data:/data
+    networks:
+      - typebot-network
+
+  # Boîte mail de test : le lien de connexion au builder y arrive.
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+    networks:
+      - typebot-network
+
+  typebot-builder:
+    <<: *typebot-common
+    image: baptistearno/typebot-builder:3.19.1
+    ports:
+      - "8080:3000"
+
+  typebot-viewer:
+    <<: *typebot-common
+    image: baptistearno/typebot-viewer:3.19.1
+    ports:
+      - "8091:3000"
+
+networks:
+  typebot-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  redis-data:

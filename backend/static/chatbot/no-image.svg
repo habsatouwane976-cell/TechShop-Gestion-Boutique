@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <rect width="480" height="360" fill="#eff6ff"/>
+  <g fill="none" stroke="#1d4ed8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.55">
+    <rect x="170" y="110" width="140" height="100" rx="12"/>
+    <path d="M150 230h180"/>
+  </g>
+  <text x="240" y="285" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" fill="#1e40af">TechShop Electronics</text>
+</svg>

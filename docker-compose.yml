@@ -31,7 +31,9 @@ services:
       DB_PASSWORD: boutique_password
       DB_HOST: db
       DB_PORT: "5432"
-      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend,host.docker.internal
+      CHATBOT_API_KEY: ${CHATBOT_API_KEY:-}
+      CHATBOT_PUBLIC_BASE_URL: ${CHATBOT_PUBLIC_BASE_URL:-http://localhost:8000}
     volumes:
       - ./backend:/app
       - media_data:/app/media
