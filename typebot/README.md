@@ -55,7 +55,7 @@ docker compose up -d
 
 ```powershell
 docker compose exec backend python -m pytest apps/chatbot     # API (30 tests)
-python typebot/e2e_test.py -v                                  # conversation réelle via le viewer
+python typebot/e2e_test.py -v   # conversation réelle ; CHATBOT_E2E_API pour un autre port du backend
 ```
 
 `e2e_test.py` passe de vraies commandes puis les annule (le stock est restauré).
