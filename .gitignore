@@ -5,3 +5,7 @@ __pycache__/
 dist/
 *.sqlite3
 .pytest_cache/
+
+# Assistant Typebot : le workflow généré contient la clé API
+typebot/techshop-chatbot.json
+typebot/.env

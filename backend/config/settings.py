@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.inventory',
     'apps.reports',
     'apps.notifications',
+    'apps.chatbot',
 ]
 
 MIDDLEWARE = [
@@ -152,6 +153,12 @@ CORS_ALLOWED_ORIGINS = config(
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+# ─── Assistant Typebot ─────────────────────────────────────
+# Clé partagée avec le workflow Typebot (en-tête X-Chatbot-Key). Vide = API fermée.
+CHATBOT_API_KEY = config('CHATBOT_API_KEY', default='')
+# URL publique de l'API, utilisée pour les images vues par le navigateur du client.
+CHATBOT_PUBLIC_BASE_URL = config('CHATBOT_PUBLIC_BASE_URL', default='')
 
 # ─── Swagger ───────────────────────────────────────────────
 SWAGGER_SETTINGS = {
