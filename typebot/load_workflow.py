@@ -15,14 +15,25 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 BOT_NAME = 'Assistant TechShop'
 PUBLIC_ID = 'techshop-assistant'
-DB_CONTAINER = 'typebot-typebot-db-1'
+DB_SERVICE = 'typebot-db'
 JSON_COLUMNS = ('groups', 'variables', 'edges', 'events', 'theme', 'settings')
 SCHEMA_VERSION = '6.1'
 
 
+def db_container():
+    """Trouve le conteneur Postgres de Typebot par son service Compose, quel que soit le nom du projet."""
+    found = subprocess.run(
+        ['docker', 'ps', '-q', '--filter', f'label=com.docker.compose.service={DB_SERVICE}'],
+        capture_output=True, text=True,
+    ).stdout.split()
+    if not found:
+        raise SystemExit("Typebot n'est pas lancé : exécutez `docker compose up -d` dans le dossier typebot/.")
+    return found[0]
+
+
 def psql(sql):
     result = subprocess.run(
-        ['docker', 'exec', '-i', DB_CONTAINER, 'psql', '-U', 'postgres', 'typebot',
+        ['docker', 'exec', '-i', db_container(), 'psql', '-U', 'postgres', 'typebot',
          '-At', '-v', 'ON_ERROR_STOP=1'],
         input=sql, capture_output=True, text=True, encoding='utf-8',
     )

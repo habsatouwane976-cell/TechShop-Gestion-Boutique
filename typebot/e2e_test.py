@@ -6,14 +6,17 @@ Usage : python typebot/e2e_test.py [-v]
 Les commandes créées sont réelles (stock décrémenté puis restauré par l'annulation).
 """
 import json
+import os
 import re
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 VIEWER = 'http://localhost:8091'
 PUBLIC_ID = 'techshop-assistant'
-API = 'http://localhost:8001'
+API = os.getenv('CHATBOT_E2E_API', 'http://localhost:8000')   # URL du backend vue depuis votre PC
+ENV_FILE = Path(__file__).resolve().parent.parent / '.env'
 VERBOSE = '-v' in sys.argv
 
 
@@ -83,7 +86,7 @@ def django_check(path, key):
 
 
 def read_key():
-    for line in open('../.env', encoding='utf-8'):
+    for line in ENV_FILE.read_text(encoding='utf-8').splitlines():
         if line.startswith('CHATBOT_API_KEY='):
             return line.split('=', 1)[1].strip()
     raise SystemExit('CHATBOT_API_KEY introuvable dans ../.env')
