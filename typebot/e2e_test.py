@@ -99,23 +99,15 @@ def stock_of(key, product_name):
     return 0
 
 
-def scenario_browse_and_order(key):
-    chat = Chat().expect('Bonjour et bienvenue')
-    chat.send('Voir les produits').expect('Quelle catégorie')
-    assert chat.choices[0] == 'Tous les produits', chat.choices
-    chat.click('Écouteurs').expect('budget')
-    chat.click('Pas de limite').expect('Produit 1 sur')
-    assert chat.images and chat.images[0].startswith('http'), chat.images
-    name = re.search(r'\*?\*?(.+)', chat.texts[0]).group(1).split('\n')[0].strip()
-    before = stock_of(key, name)
-    chat.click('Produit suivant').expect('Produit 2 sur')
-    chat.click('Produit précédent').expect('Produit 1 sur')
-    chat.click('Ajouter au panier').expect('Quelle quantité')
-    chat.send('99').expect('exemplaire(s)')          # plus que le stock : refusé
-    chat.send('2').expect('ajouté à votre panier')
-    assert 'contient 2 article' in chat.output, chat.output
+def product_name(chat):
+    """Nom du produit affiché dans la dernière fiche (première ligne, sans le gras)."""
+    return chat.texts[-1].splitlines()[0].strip()
+
+
+def checkout_as_guest(chat):
+    """Du panier à la confirmation : livraison, adresse, Wave. Retourne le numéro de commande."""
     chat.click('Commander maintenant').expect('nom complet')
-    chat.send('Awa "Aïsha" N\'Diaye').expect('téléphone')
+    chat.send("Awa \"Aïsha\" N'Diaye").expect('téléphone')
     chat.send('12 34').expect('ne semble pas valide')
     chat.send('77 123 45 67').expect('recevoir votre commande')
     chat.click('Livraison').expect('adresse de livraison')
@@ -123,52 +115,95 @@ def scenario_browse_and_order(key):
     chat.send('Sicap Liberté 6, villa 12, face pharmacie').expect('payer')
     chat.click('Wave').expect('Récapitulatif', 'Total TTC', 'Livraison à : Sicap')
     chat.click('Confirmer').expect('Votre commande est enregistrée', 'FAC-')
-    number = re.search(r'FAC-\d{8}-[A-Z0-9]{6}', chat.output).group(0)
+    return re.search(r'FAC-\d{8}-[A-Z0-9]{6}', chat.output).group(0)
+
+
+def scenario_free_text_order(key):
+    chat = Chat().expect('Bonjour et bienvenue', 'Écrivez-moi')
+    assert chat.input.get('type') == 'text input', chat.input
+    chat.send('Bonsoir').expect('comment puis-je vous aider')
+    chat.send('je cherche un casque bluetooth à moins de 60 000 fcfa').expect(
+        'Je recherche', 'casque bluetooth', "J'ai trouvé 1 produit")
+    assert chat.images and chat.images[0].startswith('http'), chat.images
+    name = product_name(chat)
+    assert name == 'Casque Bluetooth JBL Tune', name
+    before = stock_of(key, name)
+    chat.click('Ajouter au panier').expect('Quelle quantité')
+    chat.send('99').expect('exemplaire(s)')          # plus que le stock : refusé
+    chat.send('2').expect('ajouté à votre panier')
+    assert 'contient 2 article' in chat.output, chat.output
+    number = checkout_as_guest(chat)
     assert stock_of(key, name) == before - 2, 'le stock doit baisser de 2'
     return number, name, before
 
 
+def scenario_free_text_search_quality():
+    chat = Chat()
+    chat.send('un casque à moins de 10000').expect('aucun produit', '48 000 FCFA')
+    chat.click('Nouvelle recherche').expect('Écrivez votre demande')
+    chat.send('samsumg galaxi').expect("J'ai trouvé", 'Je recherche')          # faute de frappe
+    chat.click('Autre recherche').send('ordinateur portable max 600k').expect("J'ai trouvé")
+    assert 'Ultrabook' in chat.texts[-1] or 'Laptop' in chat.texts[-1] or 'PC' in chat.texts[-1], chat.texts[-1]
+    chat.click('Autre recherche').send('un iphone 15').expect('iPhone 15')
+
+
+def scenario_free_text_info():
+    chat = Chat()
+    chat.send('quels sont vos frais de livraison ?').expect('livraison à domicile', 'retrait en boutique')
+    chat.send('peut-on payer avec Wave ?').expect('Wave', 'Orange Money')
+    chat.send('je veux parler à un conseiller').expect('Dakar', 'Téléphone')
+    chat.send('qui êtes-vous ?').expect("l'assistant de TechShop")
+    chat.send('merci').expect('Avec plaisir')
+    chat.send('xyzqwerty').expect('pas bien compris')
+    assert 'Chercher dans le catalogue' in chat.choices, chat.choices
+    chat.click('Voir le menu').expect('Voici ce que je peux faire')
+    chat.click('Livraison, paiement').click('Moyens de paiement').expect('espèces')
+    chat.send('au revoir').expect('À bientôt')
+
+
 def scenario_track_and_cancel(key, number, name, stock_before):
     chat = Chat()
-    chat.click('Suivre ou annuler').expect('numéro de commande')
+    chat.send('je veux annuler ma commande').expect('numéro de commande')
     chat.send('n importe quoi').expect('pas le bon format')
     chat.click('Réessayer').expect('numéro de commande')
     chat.send(number).expect('téléphone')
     chat.send('78 000 00 00').expect('Aucune commande ne correspond')
     chat.click('autre numéro').expect('numéro de commande')
     chat.send(number).send('77 123 45 67').expect(number, 'En attente', 'Wave', 'Total TTC')
-    chat.expect('annuler')
     chat.click('Annuler cette commande').expect('vraiment annuler')
     chat.click('Oui').expect('est annulée')
     assert stock_of(key, name) == stock_before, 'le stock doit être restauré'
-    chat.click('Oui, retour').expect('Que souhaitez-vous faire')
-    chat.click('Suivre').send(number).expect('Annulée')   # téléphone déjà mémorisé
+    chat.send(f'où en est ma commande {number.lower()} ?').expect('Annulée')   # numéro lu dans la phrase
     assert 'Annuler cette commande' not in ' '.join(chat.choices)
 
 
-def scenario_search_cart_prefilled():
+def scenario_buttons_menu_and_prefilled_client():
     chat = Chat({'nom': 'Moussa Fall', 'telephone': '+221 77 555 66 77'}).expect('Bonjour Moussa Fall')
-    chat.click('Rechercher un produit').expect('Quel produit')
-    chat.send('zzzintrouvable').expect('Aucun produit').click('Rechercher autre chose')
-    chat.send('casque').expect('Produit 1 sur')
+    chat.send('menu').click('Voir les produits').expect('Quelle catégorie')
+    assert chat.choices[0] == 'Tous les produits', chat.choices
+    chat.click('Écouteurs').expect('budget')
+    chat.click('Pas de limite').expect('Produit 1 sur')
+    chat.click('Produit suivant').expect('Produit 2 sur')
+    chat.click('Produit précédent').expect('Produit 1 sur')
     chat.click('Ajouter').send('1').click('Continuer')
     chat.click('Voir mon panier').expect('Votre panier', 'Sous-total HT', 'TVA (18 %)')
     chat.click('Retirer un article').expect('Quel article')
     chat.click('1 x').expect('Votre panier est vide')
-    chat.click('Retour au menu').click('Livraison, paiement').click('Contacter').expect('Dakar', 'Téléphone')
+    chat.click('Écrire ma demande').send('mon panier').expect('vide')
 
 
 def main():
     key = read_key()
-    for label, run in (
-        ('Parcours catalogue -> commande livrée Wave', lambda: scenario_browse_and_order(key)),
-    ):
-        number, name, before = run()
-        print(f'OK  {label} ({number})')
+    number, name, before = scenario_free_text_order(key)
+    print(f'OK  Texte libre : recherche avec budget, panier, commande livrée Wave ({number})')
+    scenario_free_text_search_quality()
+    print('OK  Texte libre : budget trop bas, fautes de frappe, modèles')
+    scenario_free_text_info()
+    print('OK  Texte libre : infos, présentation, incompris, au revoir')
     scenario_track_and_cancel(key, number, name, before)
-    print('OK  Suivi puis annulation (stock restauré)')
-    scenario_search_cart_prefilled()
-    print('OK  Recherche, panier, client connecté, infos')
+    print('OK  Suivi et annulation par message (stock restauré)')
+    scenario_buttons_menu_and_prefilled_client()
+    print('OK  Menu à boutons et client connecté')
 
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 from flow_lib import Flow
+from hub import add_hub
 from theme import SETTINGS, build_theme
 
 ROOT = Path(__file__).resolve().parent
@@ -25,7 +26,9 @@ SHOP_EMAIL = 'contact@techshop-electronics.com'
 TVA_RATE = 18                              # identique à Sale.tax_rate côté Django
 BUDGETS = [('Moins de 50 000 FCFA', 50000), ('Moins de 150 000 FCFA', 150000),
            ('Moins de 400 000 FCFA', 400000), ('Pas de limite', '')]
-PHONE_REGEX = r'^\s*(\+?221|00221)?[\s.-]?(7[05678]|3[03])([\s.-]?\d){7}\s*$'
+WELCOME_HELP = ('Écrivez-moi simplement ce dont vous avez besoin, par exemple « un casque Bluetooth à moins de '
+                '50 000 FCFA » ou « où en est ma commande ? ». Tapez « menu » pour voir les options.')
+PHONE_REGEX =r'^\s*(\+?221|00221)?[\s.-]?(7[05678]|3[03])([\s.-]?\d){7}\s*$'
 INVOICE_REGEX = r'^\s*FAC-\d{8}-[A-Za-z0-9]{6}\s*$'
 
 # --- Extraits JavaScript (variables référencées par {{nom}}) -------------
@@ -86,16 +89,17 @@ def build():
     f.branch(g, [('nom', 'Is set', None, 'Accueil - connu')], 'Accueil - inconnu')
     g = f.group('Accueil - inconnu', 300, -120)
     f.say(g, f'Bonjour et bienvenue chez {SHOP_NAME}.')
-    f.say(g, 'Je peux vous aider à choisir un produit, passer commande ou suivre une livraison.', then='Menu')
+    f.say(g, WELCOME_HELP, then='Hub - saisie')
     g = f.group('Accueil - connu', 300, 120)
     f.say(g, f'Bonjour {{{{nom}}}}, bienvenue chez {SHOP_NAME}.')
-    f.say(g, 'Je peux vous aider à choisir un produit, passer commande ou suivre une livraison.', then='Menu')
+    f.say(g, WELCOME_HELP, then='Hub - saisie')
+    add_hub(f, SHOP_NAME)
 
     g = f.group('Menu', 700, 0)
-    f.say(g, 'Que souhaitez-vous faire ?')
+    f.say(g, 'Voici ce que je peux faire pour vous. Vous pouvez aussi écrire directement votre demande.')
     f.buttons(g, [
         ('Voir les produits', 'Catalogue - catégories'),
-        ('Rechercher un produit', 'Recherche - saisie'),
+        ('Écrire ma demande', 'Hub - invite'),
         ('Mon panier', 'Panier - voir'),
         ('Suivre ou annuler une commande', 'Suivi - numéro'),
         ('Livraison, paiement, contact', 'Infos - menu'),
@@ -125,39 +129,45 @@ def build():
     mapping = json.dumps({label: str(value) for label, value in BUDGETS}, ensure_ascii=False)
     f.set_var(g, 'budget', code=f'return ({mapping})[{{{{budget_choix}}}}] || "";', then='Produits - chargement')
 
-    # --- Recherche -------------------------------------------------------
-    g = f.group('Recherche - saisie', 1100, 0)
-    f.say(g, 'Quel produit cherchez-vous ? Par exemple : casque, Samsung, chargeur.')
-    f.ask(g, 'recherche', 'Nom ou type de produit...', button='Rechercher')
-    f.set_var(g, 'cat_id', empty=True)
-    f.set_var(g, 'budget', empty=True)
-    f.set_var(g, 'recherche_q', code='return encodeURIComponent({{recherche}});', then='Produits - chargement')
-
     # --- Liste et fiche produit -----------------------------------------
     g = f.group('Produits - chargement', 2300, -150)
     f.set_var(g, 'nb', text='erreur')   # reste « erreur » si l'API ne répond pas correctement
+    f.set_var(g, 'hint', empty=True)
     f.http(g, 'GET', '{{api_url}}/api/chatbot/products/?category={{cat_id}}&max_price={{budget}}&q={{recherche_q}}', [
         ('produits', 'data.results'),
         ('nb', 'data && data.count !== undefined ? String(data.count) : "erreur"'),
+        ('hint', 'data && data.hint ? data.hint : ""'),
     ])
     f.branch(g, [('nb', 'Equal to', 'erreur', 'Erreur - indisponible'),
                  ('nb', 'Equal to', '0', 'Produits - aucun')], 'Produits - début')
 
     g = f.group('Produits - aucun', 2700, -300)
-    f.say(g, "Aucun produit disponible ne correspond à votre demande.")
-    f.buttons(g, [('Rechercher autre chose', 'Recherche - saisie'),
-                  ('Voir les catégories', 'Catalogue - catégories'), ('Retour au menu', 'Menu')])
+    f.say(g, "Je n'ai trouvé aucun produit disponible qui corresponde à votre demande.")
+    f.branch(g, [('hint', 'Is set', None, 'Produits - indice')], 'Produits - alternatives')
+    g = f.group('Produits - indice', 3100, -420)
+    f.say(g, '{{hint}}', then='Produits - alternatives')
+    g = f.group('Produits - alternatives', 3500, -300)
+    f.say(g, 'Souhaitez-vous essayer autre chose ?')
+    f.buttons(g, [('Nouvelle recherche', 'Hub - invite'),
+                  ('Voir les catégories', 'Catalogue - catégories'), ('Parler à la boutique', 'Infos - contact')])
 
     g = f.group('Produits - début', 2700, -100)
+    f.set_var(g, 'nb_texte', code="return {{nb}} + ' produit' + (Number({{nb}}) > 1 ? 's' : '');")
+    f.say(g, "J'ai trouvé {{nb_texte}} pour vous.")
     f.set_var(g, 'idx', text='0', then='Fiche produit')
 
     g = f.group('Fiche produit', 3100, -100)
     product_fields(f, g)
     f.image(g, '{{p_image}}')
     f.say(g, '**{{p_nom}}**\n{{p_prix}}\n{{p_info}}\n{{p_dispo}}  |  Produit {{p_pos}}')
+    f.branch(g, [('nb', 'Equal to', '1', 'Fiche - choix unique')], 'Fiche - choix')
+    g = f.group('Fiche - choix', 3500, -400)
     f.buttons(g, [('Ajouter au panier', 'Panier - quantité'), ('Produit suivant', 'Navigation - suivant'),
                   ('Produit précédent', 'Navigation - précédent'), ('Voir mon panier', 'Panier - voir'),
-                  ('Retour au menu', 'Menu')])
+                  ('Autre recherche', 'Hub - invite')])
+    g = f.group('Fiche - choix unique', 3500, -550)
+    f.buttons(g, [('Ajouter au panier', 'Panier - quantité'), ('Voir mon panier', 'Panier - voir'),
+                  ('Autre recherche', 'Hub - invite')])
 
     g = f.group('Navigation - suivant', 3100, 250)
     f.set_var(g, 'idx', code='return String((Number({{idx}}) + 1) % Number({{nb}}));', then='Fiche produit')
@@ -203,13 +213,13 @@ def build():
 
     g = f.group('Panier - vide', 1100, 600)
     f.say(g, "Votre panier est vide pour le moment.")
-    f.buttons(g, [('Voir les produits', 'Catalogue - catégories'), ('Rechercher un produit', 'Recherche - saisie'),
-                  ('Retour au menu', 'Menu')])
+    f.buttons(g, [('Voir les produits', 'Catalogue - catégories'), ('Écrire ma demande', 'Hub - invite'),
+                  ('Voir le menu', 'Menu')])
 
     g = f.group('Panier - contenu', 1100, 400)
     f.say(g, '**Votre panier**\n{{panier_resume}}\n\n{{panier_totaux}}')
     f.buttons(g, [('Passer commande', 'Commande - identité'), ('Retirer un article', 'Panier - retirer'),
-                  ('Vider le panier', 'Panier - vider'), ('Continuer mes achats', 'Menu')])
+                  ('Vider le panier', 'Panier - vider'), ('Continuer mes achats', 'Hub - invite')])
 
     g = f.group('Panier - retirer', 1500, 400)
     f.say(g, 'Quel article souhaitez-vous retirer ?')
@@ -402,10 +412,11 @@ def build():
              f"ou appelez-nous au {SHOP_PHONE}.", then='Autre chose')
 
     g = f.group('Autre chose', 6000, 400)
-    f.say(g, 'Puis-je vous aider pour autre chose ?')
-    f.buttons(g, [('Oui, retour au menu', 'Menu'), ('Non, merci', 'Au revoir')])
+    f.say(g, 'Puis-je vous aider pour autre chose ? Écrivez votre demande, ou « menu » pour voir les options.',
+          then='Hub - saisie')
     g = f.group('Au revoir', 6400, 400)
     f.say(g, f'Merci de votre visite chez {SHOP_NAME}. À bientôt.')
+    f.buttons(g, [('Nouvelle demande', 'Hub - invite')])
 
     return f.export('Assistant TechShop', build_theme(site), SETTINGS)
 

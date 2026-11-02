@@ -18,10 +18,13 @@ boutique/
 │   │   ├── suppliers/        ← Fournisseurs
 │   │   ├── inventory/        ← Stocks, approvisionnements
 │   │   ├── reports/          ← Dashboard, rapports, export Excel
-│   │   └── notifications/    ← Alertes temps réel
+│   │   ├── notifications/    ← Alertes temps réel
+│   │   └── chatbot/          ← API de l'assistant (langage libre, commandes invité)
 │   ├── config/               ← Settings, URLs, WSGI
 │   ├── seed.py               ← 23 produits, 8 clients, 30 jours de ventes
 │   └── requirements.txt
+│
+├── typebot/                  ← Assistant de vente : workflow, thème, chargement, tests
 │
 └── frontend/                 ← Interface React + Vite
     └── src/
@@ -64,6 +67,23 @@ boutique/
 | **Rapports** | Quotidien/mensuel/annuel, export Excel 3 feuilles |
 | **Notifications** | Alertes stock bas, rupture, ventes |
 | **Journal** | Toutes les actions enregistrées avec IP |
+
+### 💬 Assistant de vente (chatbot)
+Une bulle de chat orange, sur le site pour les visiteurs et les clients, basée sur
+[Typebot](https://github.com/baptisteArno/typebot.io) auto-hébergé. Le client **écrit comme il veut**,
+l'assistant comprend et répond :
+
+| Le client écrit | L'assistant fait |
+|---|---|
+| « un casque bluetooth à moins de 60 000 FCFA » | Recherche (budget, accents, pluriels, fautes de frappe) et fiches avec photo |
+| « où en est ma commande FAC-… » | Statut, livraison, paiement, articles et total |
+| « je veux annuler ma commande » | Annulation tant qu'elle est « En attente » (stock remis) |
+| « frais de livraison », « payer avec Wave », « parler à un conseiller » | Informations pratiques et contact |
+| « menu » | Boutons : catalogue, panier, commande, suivi |
+
+Il gère aussi le panier (TVA 18 %) et la commande complète sans compte : livraison ou retrait,
+paiement espèces, Wave ou Orange Money. Un client connecté retrouve son nom et son téléphone préremplis.
+Installation, architecture et tests : **[typebot/README.md](typebot/README.md)**.
 
 ### 🗺️ Géolocalisation
 - Localisation au moment de la connexion
@@ -199,6 +219,14 @@ GET    /api/reports/export/       Export Excel
 # Notifications
 GET    /api/notifications/        Mes notifications
 PATCH  /api/notifications/        Tout marquer lu
+
+# Assistant (en-tête X-Chatbot-Key obligatoire, réservé à Typebot)
+POST   /api/chatbot/understand/           Intention, budget, mots-clés d'un message libre
+GET    /api/chatbot/categories/           Catégories avec produits disponibles
+GET    /api/chatbot/products/             Recherche (q, category, max_price)
+POST   /api/chatbot/orders/               Commande invité
+GET    /api/chatbot/orders/<n°>/?phone=   Suivi (numéro + téléphone)
+POST   /api/chatbot/orders/<n°>/cancel/   Annulation
 ```
 
 ---
@@ -209,6 +237,12 @@ PATCH  /api/notifications/        Tout marquer lu
 cd backend
 venv\Scripts\Activate.ps1
 python manage.py test
+```
+
+Avec Docker, les tests pytest (dont ceux de l'assistant) se lancent ainsi :
+
+```powershell
+docker compose exec backend python -m pytest
 ```
 
 ---

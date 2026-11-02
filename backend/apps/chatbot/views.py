@@ -4,13 +4,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.products.models import Category, Product
+from apps.products.models import Category
 
 from . import services
+from .nlu import Vocabulary, significant_words, understand
 from .permissions import HasChatbotKey
+from .search import budget_hint, search_products
 from .serializers import order_summary, parse_order, product_card, public_base_url
 
-PRODUCT_LIMIT = 12
 IN_STOCK = Q(products__is_active=True, products__quantity__gt=0)
 
 
@@ -33,26 +34,25 @@ class CategoryListView(ChatbotView):
 
 class ProductListView(ChatbotView):
     def get(self, request):
-        products = Product.objects.select_related('category').filter(
-            is_active=True, quantity__gt=0
-        )
         params = request.query_params
-        if params.get('category', '').isdigit():
-            products = products.filter(category_id=int(params['category']))
-        if params.get('max_price', '').isdigit():
-            products = products.filter(selling_price__lte=int(params['max_price']))
-        query = params.get('q', '').strip()
-        if query:
-            products = products.filter(
-                Q(name__icontains=query) | Q(description__icontains=query)
-                | Q(reference__icontains=query)
-            )
+        category_id = int(params['category']) if params.get('category', '').isdigit() else None
+        max_price = int(params['max_price']) if params.get('max_price', '').isdigit() else None
+        tokens = significant_words(params.get('q', ''))
         base = public_base_url(request)
         results = [
-            product_card(p, base)
-            for p in products.order_by('selling_price', 'name')[:PRODUCT_LIMIT]
+            product_card(product, base)
+            for product in search_products(tokens, category_id, max_price)
         ]
-        return Response({'count': len(results), 'results': results})
+        hint = '' if results else budget_hint(tokens, category_id, max_price)
+        return Response({'count': len(results), 'results': results, 'hint': hint})
+
+
+class UnderstandView(ChatbotView):
+    """Analyse un message libre : intention, budget, mots de recherche, numéro de commande."""
+
+    def post(self, request):
+        message = request.data.get('message', '')
+        return Response(understand(message if isinstance(message, str) else '', Vocabulary.from_catalog()))
 
 
 class OrderCreateView(ChatbotView):
