@@ -66,10 +66,10 @@ export default function Suppliers() {
               {suppliers.map(s => (
                 <tr key={s.id}>
                   <td><p className="font-medium text-gray-900">{s.name}</p></td>
-                  <td className="text-sm text-gray-600">{s.contact_person || "—"}</td>
-                  <td className="text-sm">{s.phone || "—"}</td>
-                  <td className="text-sm text-gray-600">{s.email || "—"}</td>
-                  <td className="text-sm text-gray-600">{s.city || "—"}</td>
+                  <td className="text-sm text-gray-600">{s.contact_person || "-"}</td>
+                  <td className="text-sm">{s.phone || "-"}</td>
+                  <td className="text-sm text-gray-600">{s.email || "-"}</td>
+                  <td className="text-sm text-gray-600">{s.city || "-"}</td>
                   <td><span className="badge bg-blue-100 text-blue-700">{s.total_supplies}</span></td>
                   <td className="font-semibold text-emerald-600">{formatCurrency(s.total_supply_amount)}</td>
                   <td>{canManage && (

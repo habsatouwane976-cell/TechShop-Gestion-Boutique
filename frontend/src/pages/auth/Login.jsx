@@ -6,7 +6,7 @@ import { loginUser, clearError } from "../../store/slices/authSlice"
 import { useGeolocation } from "../../hooks/useGeolocation"
 import { Eye, EyeOff, MapPin } from "lucide-react"
 import toast from "react-hot-toast"
-import logo from "../../assets/payment/logo.png"
+import logo from "../../assets/logo.png"
 
 export default function Login() {
   const dispatch = useDispatch()
@@ -42,7 +42,7 @@ export default function Login() {
       <header className="border-b border-gray-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Link to="/" className="inline-flex items-center gap-2">
-            <img src={logo} alt="TechShop Electronics" className="h-9 w-auto object-contain" />
+            <img src={logo} alt="TechShop Electronics" className="h-10 w-10 rounded-xl object-contain" />
             <span className="font-bold text-gray-900">
               TechShop <span className="text-accent-600">Electronics</span>
             </span>

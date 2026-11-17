@@ -51,6 +51,14 @@ docker compose up -d
    `VITE_TYPEBOT_VIEWER_URL=http://localhost:8091`, puis `npm install && npm run dev`.
    Sans `VITE_TYPEBOT_ID`, le widget est désactivé.
 
+## Diagnostic rapide
+
+```powershell
+python typebot/diagnostic.py
+```
+
+Vérifie la clé, l'API, Typebot, le bot publié et le frontend, et indique la commande à lancer pour chaque problème.
+
 ## Tester
 
 ```powershell

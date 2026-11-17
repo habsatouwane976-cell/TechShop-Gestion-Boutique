@@ -118,10 +118,10 @@ export default function ClientCart() {
       setSuccess(
         sale?.status === "completed"
           ? `Paiement confirmé, commande complétée${
-              sale?.invoice_number ? ` — ${sale.invoice_number}` : ""
+              sale?.invoice_number ? ` - ${sale.invoice_number}` : ""
             }.`
           : `Commande enregistrée avec succès${
-              sale?.invoice_number ? ` — ${sale.invoice_number}` : ""
+              sale?.invoice_number ? ` - ${sale.invoice_number}` : ""
             }. Paiement à la livraison.`
       )
 

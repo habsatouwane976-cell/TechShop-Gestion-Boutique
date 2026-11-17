@@ -9,3 +9,8 @@ dist/
 # Assistant Typebot : le workflow généré contient la clé API
 typebot/techshop-chatbot.json
 typebot/.env
+
+venv/
+.venv/
+logs/
+staticfiles/

@@ -209,7 +209,7 @@ def build():
     g = f.group('Panier - contenu', 1100, 400)
     f.say(g, '**Votre panier**\n{{panier_resume}}\n\n{{panier_totaux}}')
     f.buttons(g, [('Passer commande', 'Commande - identité'), ('Retirer un article', 'Panier - retirer'),
-                  ('Vider le panier', 'Panier - vider'), ('Continuer mes achats', 'Menu')])
+                  ('Vider le panier', 'Panier - vider'), ('Continuer mes achats', 'Catalogue - catégories')])
 
     g = f.group('Panier - retirer', 1500, 400)
     f.say(g, 'Quel article souhaitez-vous retirer ?')
@@ -406,6 +406,7 @@ def build():
     f.buttons(g, [('Oui, retour au menu', 'Menu'), ('Non, merci', 'Au revoir')])
     g = f.group('Au revoir', 6400, 400)
     f.say(g, f'Merci de votre visite chez {SHOP_NAME}. À bientôt.')
+    f.buttons(g, [('Nouvelle conversation', 'Menu')])   # évite l'impasse : le chat reste utilisable
 
     return f.export('Assistant TechShop', build_theme(site), SETTINGS)
 

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { authService } from "../../services/authService";
 import { useGeolocation } from "../../hooks/useGeolocation";
-import logo from "../../assets/payment/logo.png";
+import logo from "../../assets/logo.png";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -95,7 +95,7 @@ const Register = () => {
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <img src={logo} alt="TechShop Electronics" className="h-10 w-auto object-contain" />
+            <img src={logo} alt="TechShop Electronics" className="h-16 w-16 rounded-2xl object-contain" />
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
           <p className="text-gray-500 mt-2">Rejoignez TechShop Electronics dès aujourd'hui</p>

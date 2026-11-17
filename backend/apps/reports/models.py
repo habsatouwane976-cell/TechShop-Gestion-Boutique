@@ -1,1 +1,1 @@
-# No models — reports are generated dynamically
+# No models - reports are generated dynamically

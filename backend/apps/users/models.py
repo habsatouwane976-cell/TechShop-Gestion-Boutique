@@ -108,7 +108,7 @@ class User(AbstractUser):
 
 
 class ActivityLog(models.Model):
-    """Journal d'activité — enregistre les actions utilisateur."""
+    """Journal d'activité - enregistre les actions utilisateur."""
 
     ACTION_CHOICES = [
         ("login", "Connexion"),

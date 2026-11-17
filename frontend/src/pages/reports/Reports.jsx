@@ -2,7 +2,8 @@ import { useState, useEffect } from "react"
 import { reportsService } from "../../services/reportsService"
 import LoadingSpinner from "../../components/common/LoadingSpinner"
 import PageHeader from "../../components/common/PageHeader"
-import { formatCurrency, formatPercent } from "../../utils/formatters"
+import { formatCurrency, formatPercent, cleanLabel } from "../../utils/formatters"
+import { PAYMENT_METHODS } from "../../utils/constants"
 import { Download, BarChart3, TrendingUp, FileSpreadsheet } from "lucide-react"
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -138,7 +139,7 @@ export default function Reports() {
             <div className="card">
               <h2 className="font-semibold text-gray-800 mb-5 flex items-center space-x-2">
                 <TrendingUp className="w-5 h-5 text-primary-600" />
-                <span>Évolution journalière — {data.start_date} au {data.end_date}</span>
+                <span>Évolution journalière - {data.start_date} au {data.end_date}</span>
               </h2>
               <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={data.daily}>
@@ -194,7 +195,7 @@ export default function Reports() {
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={data.by_payment.map(p => ({
                     ...p,
-                    label: { cash:"Espèces", card:"Carte", mobile:"Mobile", credit:"Crédit", transfer:"Virement" }[p.payment_method] || p.payment_method
+                    label: PAYMENT_METHODS[p.payment_method]?.label || cleanLabel(p.payment_method)
                   }))}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                     <XAxis dataKey="label" tick={{ fontSize: 11 }} />

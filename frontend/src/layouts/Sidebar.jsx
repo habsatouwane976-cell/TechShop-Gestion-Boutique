@@ -1,4 +1,4 @@
-import logo from "../assets/payment/logo.png"
+import logo from "../assets/logo.png"
 import { Link, useLocation } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { useAuth } from "../hooks/useAuth"
@@ -42,9 +42,7 @@ export default function Sidebar({ mobile = false, onClose }) {
       <div className="flex items-center justify-between px-4 py-5 border-b border-gray-100">
         {!collapsed && (
           <Link to="/" className="flex items-center gap-2 w-full">
-            <div className="w-9 h-9 rounded-lg bg-accent-600 flex items-center justify-center shrink-0">
-              <ShoppingCart className="w-4 h-4 text-white" />
-            </div>
+            <img src={logo} alt="" className="w-10 h-10 rounded-xl object-contain shrink-0" />
             <div className="leading-tight">
               <p className="font-extrabold text-gray-900 text-sm">
                 Tech<span className="text-accent-600">Shop</span>
@@ -54,7 +52,7 @@ export default function Sidebar({ mobile = false, onClose }) {
           </Link>
         )}
         {collapsed && (
-          <img src={logo} alt="TechShop" className="h-8 object-contain mx-auto" />
+          <img src={logo} alt="TechShop" className="h-9 w-9 rounded-lg object-contain mx-auto" />
         )}
         {!mobile && (
           <button

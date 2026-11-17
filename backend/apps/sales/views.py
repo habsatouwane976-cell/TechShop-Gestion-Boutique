@@ -1,4 +1,5 @@
 """Vues pour la gestion des ventes et génération de factures PDF"""
+from .emails import send_sale_email
 import logging
 from io import BytesIO
 from rest_framework import viewsets, permissions, status, filters
@@ -63,7 +64,7 @@ def generate_sale_pdf(sale):
                        fontSize=22, textColor=blue, spaceAfter=4)
     ))
     story.append(Paragraph(
-        "Votre partenaire de gestion commerciale — Dakar, Sénégal",
+        "Votre partenaire de gestion commerciale - Dakar, Sénégal",
         ParagraphStyle('Sub', parent=styles['Normal'],
                        fontSize=10, textColor=gray)
     ))
@@ -78,7 +79,7 @@ def generate_sale_pdf(sale):
                       ParagraphStyle('', parent=styles['Normal'],
                                      fontSize=16, textColor=blue)),
             Paragraph(
-                f"Date: {sale.created_at.strftime('%d/%m/%Y %H:%M')}<br/>Caissier: {sale.cashier.get_full_name() if sale.cashier else '—'}<br/>Paiement: {sale.get_payment_method_display()}",
+                f"Date: {sale.created_at.strftime('%d/%m/%Y %H:%M')}<br/>Caissier: {sale.cashier.get_full_name() if sale.cashier else '-'}<br/>Paiement: {sale.get_payment_method_display()}",
                 ParagraphStyle('R', parent=styles['Normal'],
                                fontSize=10, alignment=TA_RIGHT)
             )
@@ -92,8 +93,8 @@ def generate_sale_pdf(sale):
     if sale.customer:
         client_data = [
             ['CLIENT', ''],
-            [f"Nom: {sale.customer.name}", f"Téléphone: {sale.customer.phone or '—'}"],
-            [f"Adresse: {sale.customer.address or '—'}", f"Email: {sale.customer.email or '—'}"],
+            [f"Nom: {sale.customer.name}", f"Téléphone: {sale.customer.phone or '-'}"],
+            [f"Adresse: {sale.customer.address or '-'}", f"Email: {sale.customer.email or '-'}"],
         ]
         ct = Table(client_data, colWidths=['50%', '50%'])
         ct.setStyle(TableStyle([
@@ -111,7 +112,7 @@ def generate_sale_pdf(sale):
     rows = [['Ref.', 'Produit', 'Qté', 'Prix U.', 'Remise', 'Total']]
     for item in sale.items.all():
         rows.append([
-            item.product_reference or '—',
+            item.product_reference or '-',
             item.product_name,
             str(item.quantity),
             f"{item.unit_price:,.0f}",
@@ -327,7 +328,7 @@ class SaleViewSet(viewsets.ModelViewSet):
                 sale.amount_paid = sale.total_amount
                 sale.change_amount = 0
                 sale.notes = (
-                    f"{sale.notes} — " if sale.notes else ""
+                    f"{sale.notes} - " if sale.notes else ""
                 ) + f"Paiement confirmé (réf. {payment_ref})"
                 sale.save(update_fields=[
                     "status", "amount_paid", "change_amount", "notes",
@@ -359,10 +360,12 @@ class SaleViewSet(viewsets.ModelViewSet):
             "create",
             "Sale",
             sale.id,
-            f"Commande {sale.invoice_number} — {sale.total_amount} FCFA",
+            f"Commande {sale.invoice_number} - {sale.total_amount} FCFA",
             get_client_ip(request),
         )
 
+        transaction.on_commit(lambda: send_sale_email(sale))
+        
         return Response(
             SaleSerializer(sale).data,
             status=status.HTTP_201_CREATED,
@@ -393,6 +396,7 @@ class SaleViewSet(viewsets.ModelViewSet):
         sale.status = "completed"
         sale.cashier = request.user
         sale.save(update_fields=["status", "cashier"])
+        send_sale_email(sale, confirmed=True)
 
         return Response({
             "message": "Commande approuvée avec succès."

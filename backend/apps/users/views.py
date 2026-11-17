@@ -214,7 +214,7 @@ class ActivityLogView(generics.ListAPIView):
 
 
 class GeolocateView(APIView):
-    """Géolocalisation inverse — coordonnées vers adresse"""
+    """Géolocalisation inverse - coordonnées vers adresse"""
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):

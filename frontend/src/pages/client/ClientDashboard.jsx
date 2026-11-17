@@ -11,6 +11,7 @@ import StoreFooter from "../../components/store/StoreFooter"
 import { logoutUser } from "../../store/slices/authSlice"
 import { salesService } from "../../services/salesService"
 import { SALE_STATUS, PAYMENT_METHODS } from "../../utils/constants"
+import { cleanLabel } from "../../utils/formatters"
 
 const formatPrice = price =>
   new Intl.NumberFormat("fr-FR").format(Number(price || 0))
@@ -223,7 +224,7 @@ export default function ClientDashboard() {
 
                         <div className="flex items-center gap-4">
                           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${status?.color || "bg-gray-100 text-gray-800"}`}>
-                            {status?.label || order.status}
+                            {status?.label || cleanLabel(order.status)}
                           </span>
                           <span className="text-sm font-bold">{formatPrice(order.total_amount)} FCFA</span>
                           {order.status === "completed" && (

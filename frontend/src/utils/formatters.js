@@ -33,6 +33,12 @@ export const timeAgo = (dateStr) => {
   return formatDate(dateStr)
 }
 
+// Texte lisible : aucune valeur technique avec "_" n'est affichée (remplacée par "-")
+export const cleanLabel = (value) => {
+  const text = String(value ?? "").replace(/_/g, "-")
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : "-"
+}
+
 export const formatPercent = (val) => `${Number(val || 0).toFixed(1)}%`
 
 export const truncate = (str, max = 50) =>

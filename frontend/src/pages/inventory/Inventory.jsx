@@ -141,7 +141,7 @@ export default function Inventory() {
                   <td className="text-center font-semibold text-gray-900">{m.quantity_after}</td>
                   <td className="text-sm">{formatCurrency(m.unit_price)}</td>
                   <td className="text-sm text-gray-600">{m.created_by_name}</td>
-                  <td className="text-xs text-gray-400 max-w-xs truncate">{m.notes || "—"}</td>
+                  <td className="text-xs text-gray-400 max-w-xs truncate">{m.notes || "-"}</td>
                 </tr>
               ))}
             </tbody>
@@ -167,7 +167,7 @@ export default function Inventory() {
                   className="input" required>
                   <option value="">Sélectionner un produit</option>
                   {products.map(p => (
-                    <option key={p.id} value={p.id}>[{p.reference}] {p.name} — Stock: {p.quantity}</option>
+                    <option key={p.id} value={p.id}>[{p.reference}] {p.name} - Stock: {p.quantity}</option>
                   ))}
                 </select>
               </div>

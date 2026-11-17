@@ -71,10 +71,10 @@ export default function Products() {
     try {
       if (editItem) {
         await productsService.update(editItem.id, fd)
-        toast.success("Produit modifiÃ© !")
+        toast.success("Produit modifié !")
       } else {
         await productsService.create(fd)
-        toast.success("Produit crÃ©Ã© !")
+        toast.success("Produit créé !")
       }
       setShowModal(false)
       fetchProducts()
@@ -87,7 +87,7 @@ export default function Products() {
     setDeleting(true)
     try {
       await productsService.delete(deleteId)
-      toast.success("Produit supprimÃ© !")
+      toast.success("Produit supprimé !")
       setDeleteId(null)
       fetchProducts()
     } catch { toast.error("Impossible de supprimer") }
@@ -112,10 +112,10 @@ export default function Products() {
       <div className="card py-4">
         <div className="flex flex-wrap gap-3">
           <SearchInput value={search} onChange={v => { setSearch(v); setPage(1) }}
-            placeholder="Rechercher produit, rÃ©fÃ©renceâ€¦" className="w-64" />
+            placeholder="Rechercher produit, référence…" className="w-64" />
           <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}
             className="input w-auto">
-            <option value="">Toutes catÃ©gories</option>
+            <option value="">Toutes catégories</option>
             {categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
           </select>
           <label className="flex items-center space-x-2 cursor-pointer px-3 py-2 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
@@ -130,7 +130,7 @@ export default function Products() {
 
       {/* Table */}
       {loading ? <LoadingSpinner /> : products.length === 0 ? (
-        <EmptyState icon={Package} title="Aucun produit trouvÃ©"
+        <EmptyState icon={Package} title="Aucun produit trouvé"
           description="Ajoutez votre premier produit pour commencer."
           action={canManage && <button onClick={openCreate} className="btn-primary">
             <Plus className="w-4 h-4" /> Ajouter un produit
@@ -140,7 +140,7 @@ export default function Products() {
           <table className="table">
             <thead>
               <tr>
-                {["Image","RÃ©f.","Produit","CatÃ©gorie","Prix Achat","Prix Vente","Stock","Marge","Statut","Actions"].map(h => (
+                {["Image","Réf.","Produit","Catégorie","Prix Achat","Prix Vente","Stock","Marge","Statut","Actions"].map(h => (
                   <th key={h}>{h}</th>
                 ))}
               </tr>
@@ -174,7 +174,7 @@ export default function Products() {
                     <p className="text-xs text-gray-400">{p.unit}</p>
                   </td>
                   <td>
-                    <span className="text-xs">{p.category_name || "â€”"}</span>
+                    <span className="text-xs">{p.category_name || "-"}</span>
                   </td>
                   <td className="font-medium">{formatCurrency(p.purchase_price)}</td>
                   <td className="font-semibold text-primary-700">{formatCurrency(p.selling_price)}</td>
@@ -233,17 +233,17 @@ export default function Products() {
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 grid grid-cols-2 gap-4">
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nom du produit *</label>
-                <input {...register("name", { required: "Requis" })} className="input" placeholder="Ex: Riz ParfumÃ© 5kg" />
+                <input {...register("name", { required: "Requis" })} className="input" placeholder="Ex: Riz Parfumé 5kg" />
                 {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">RÃ©fÃ©rence</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Référence</label>
                 <input {...register("reference")} className="input" placeholder="Auto si vide" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">CatÃ©gorie *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie *</label>
                 <select {...register("category", { required: "Requis" })} className="input">
-                  <option value="">SÃ©lectionner</option>
+                  <option value="">Sélectionner</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
                 </select>
                 {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
@@ -259,7 +259,7 @@ export default function Products() {
                 {errors.selling_price && <p className="text-red-500 text-xs mt-1">{errors.selling_price.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">QuantitÃ© *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Quantité *</label>
                 <input type="number" {...register("quantity", { required: "Requis", min: 0 })} className="input" />
               </div>
               <div>
@@ -267,8 +267,8 @@ export default function Products() {
                 <input type="number" {...register("min_stock", { required: "Requis", min: 0 })} className="input" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">UnitÃ©</label>
-                <input {...register("unit")} className="input" placeholder="unitÃ©, kg, Lâ€¦" />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Unité</label>
+                <input {...register("unit")} className="input" placeholder="unité, kg, L…" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Code-barres</label>
@@ -285,7 +285,7 @@ export default function Products() {
               </div>
               <div className="col-span-2 flex justify-end space-x-3 pt-2 border-t">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Annuler</button>
-                <button type="submit" className="btn-primary">{editItem ? "Modifier" : "CrÃ©er"}</button>
+                <button type="submit" className="btn-primary">{editItem ? "Modifier" : "Créer"}</button>
               </div>
             </form>
           </div>
@@ -294,7 +294,7 @@ export default function Products() {
 
       <ConfirmModal open={!!deleteId} onClose={() => setDeleteId(null)} onConfirm={handleDelete}
         loading={deleting} title="Supprimer le produit"
-        message="Cette action est irrÃ©versible. Le produit sera dÃ©finitivement supprimÃ©."
+        message="Cette action est irréversible. Le produit sera définitivement supprimé."
         confirmText="Supprimer" danger />
     </div>
   )

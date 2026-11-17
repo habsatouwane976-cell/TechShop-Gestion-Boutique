@@ -103,7 +103,7 @@ export default function Dashboard() {
 
         {/* Évolution 7 jours */}
         <div className="card">
-          <h2 className="font-semibold text-gray-800 mb-5">Ventes — 7 derniers jours</h2>
+          <h2 className="font-semibold text-gray-800 mb-5">Ventes - 7 derniers jours</h2>
           {sales_evolution.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={sales_evolution}>

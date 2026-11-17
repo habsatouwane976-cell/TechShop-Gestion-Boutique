@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""BoutiqueManager — Django Management Utility"""
+"""BoutiqueManager - Django Management Utility"""
 import os
 import sys
 

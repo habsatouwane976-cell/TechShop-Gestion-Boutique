@@ -231,7 +231,7 @@ function StepPanier({ search, setSearch, products, allProducts, loadingProducts,
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-base">
-            {search.trim().length >= 2 ? `Résultats pour Â« ${search} Â»` : "Tous les produits"}
+            {search.trim().length >= 2 ? `Résultats pour « ${search} »` : "Tous les produits"}
           </h2>
           {!loadingProducts && (
             <span className="text-xs text-gray-400">{displayedProducts.length} produit(s)</span>
@@ -333,7 +333,7 @@ function StepClient({
               className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">- Client anonyme -</option>
               {customers.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}{c.phone ? ` Â· ${c.phone}` : ""}</option>
+                <option key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</option>
               ))}
             </select>
           </div>
@@ -386,7 +386,7 @@ function StepClient({
               <p className="font-semibold">Position enregistrée</p>
               {customerLocationLabel && <p className="mt-0.5">{customerLocationLabel}</p>}
               <p className="mt-0.5 text-green-600 opacity-75">
-                Lat: {customerLat.toFixed(5)} Â· Lng: {customerLng.toFixed(5)}
+                Lat: {customerLat.toFixed(5)} · Lng: {customerLng.toFixed(5)}
               </p>
             </div>
           </div>
@@ -650,7 +650,7 @@ function SuccessScreen({ sale, onNewSale, onViewHistory, onDownloadPdf }) {
       </div>
       <h2 className="text-2xl font-bold text-gray-900 mb-1">Vente enregistrée !</h2>
       <p className="text-gray-500 mb-2">
-        Facture NÂ° <span className="font-semibold text-gray-800">{sale.invoice_number}</span>
+        Facture N° <span className="font-semibold text-gray-800">{sale.invoice_number}</span>
       </p>
       <p className="text-3xl font-bold text-blue-700 mb-1">{formatCurrency(sale.total_amount)}</p>
       <p className="text-emerald-600 text-sm mb-8">Bénéfice : {formatCurrency(sale.profit)}</p>

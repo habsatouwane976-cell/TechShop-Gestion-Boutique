@@ -35,7 +35,7 @@ def send_low_stock_alert(product, triggered_by=None):
     )
     notify_admins_and_managers(
         'low_stock',
-        f"⚠️ Stock bas — {product.name}",
+        f"⚠️ Stock bas - {product.name}",
         msg,
         f"/products/{product.id}"
     )
@@ -45,7 +45,7 @@ def send_out_of_stock_alert(product):
     """Alerte rupture de stock : notification dans l'application + e-mail de confirmation"""
     notify_admins_and_managers(
         'out_of_stock',
-        f"🚨 Rupture de stock — {product.name}",
+        f"🚨 Rupture de stock - {product.name}",
         f"Le produit «{product.name}» (Réf: {product.reference}) est en rupture totale de stock.",
         f"/products/{product.id}"
     )
@@ -68,10 +68,10 @@ def send_out_of_stock_email(product):
         return
 
     supplier = product.supplier.name if product.supplier_id else "Non défini"
-    category = product.category.name if product.category_id else "—"
+    category = product.category.name if product.category_id else "-"
     confirm_url = f"{settings.FRONTEND_URL}/inventory"
 
-    subject = f"🚨 Rupture de stock — {product.name}"
+    subject = f"🚨 Rupture de stock - {product.name}"
     text = (
         f"Bonjour,\n\n"
         f"Le produit « {product.name} » est en rupture de stock.\n\n"

@@ -177,7 +177,7 @@ class Sale(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Facture {self.invoice_number} — {self.total_amount} FCFA"
+        return f"Facture {self.invoice_number} - {self.total_amount} FCFA"
 
     def calculate_totals(self):
         """Recalcule tous les totaux à partir des lignes"""

@@ -7,6 +7,7 @@ import {
 import { logoutUser } from "../../store/slices/authSlice"
 import { useStoreCatalog } from "../../hooks/useStoreCatalog"
 import { categoryIcon } from "./categoryIcon"
+import logo from "../../assets/logo.png"
 
 const formatPrice = price =>
   new Intl.NumberFormat("fr-FR").format(Number(price || 0))
@@ -127,9 +128,7 @@ export default function StoreHeader({
       {/* Logo, recherche, compte, aide, panier */}
       <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 md:flex-nowrap md:gap-x-5">
         <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="TechShop Electronics - Accueil">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#f68b1e]">
-            <ShoppingCart className="h-5 w-5 text-white" />
-          </span>
+          <img src={logo} alt="" className="h-10 w-10 rounded-xl object-contain" />
           <span className="font-['Ubuntu',sans-serif] text-[22px] font-bold leading-none text-[#313133]">
             Tech<span className="text-[#f68b1e]">Shop</span>
           </span>

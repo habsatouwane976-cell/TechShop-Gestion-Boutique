@@ -6,7 +6,7 @@ export default function Pagination({ page, totalPages, onPageChange, total, perP
   return (
     <div className="flex items-center justify-between mt-4">
       <p className="text-sm text-gray-500">
-        {total && `${(page-1)*perPage+1}–${Math.min(page*perPage, total)} sur ${total}`}
+        {total && `${(page-1)*perPage+1}-${Math.min(page*perPage, total)} sur ${total}`}
       </p>
       <div className="flex items-center space-x-1">
         <button onClick={() => onPageChange(page-1)} disabled={page===1}

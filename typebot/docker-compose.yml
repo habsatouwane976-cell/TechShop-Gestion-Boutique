@@ -16,7 +16,7 @@ x-typebot-common: &typebot-common
     REDIS_URL: redis://typebot-redis:6379
   extra_hosts:
     # Permet aux conteneurs d'appeler l'API Django lancée sur la machine hôte.
-    - "host.docker.internal:host-gateway"
+    - "host.docker.internal:192.168.65.254"
 
 services:
   typebot-db:

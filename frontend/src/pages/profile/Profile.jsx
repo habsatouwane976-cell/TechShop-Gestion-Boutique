@@ -36,7 +36,7 @@ export default function Profile() {
       })
       if (res.ok) {
         await dispatch(fetchCurrentUser())
-        toast.success("Profil mis Ã  jour !")
+        toast.success("Profil mis à jour !")
       }
     } catch { toast.error("Erreur") } finally { setLoading(false) }
   }
@@ -45,20 +45,20 @@ export default function Profile() {
     setLoading(true)
     try {
       await authService.changePassword(data)
-      toast.success("Mot de passe modifiÃ© !")
+      toast.success("Mot de passe modifié !")
       resetPwd()
     } catch (err) { toast.error(err.response?.data?.error || "Erreur") } finally { setLoading(false) }
   }
 
   const TABS = [
     { k: "info", label: "Informations", icon: User },
-    { k: "security", label: "SÃ©curitÃ©", icon: Lock },
+    { k: "security", label: "Sécurité", icon: Lock },
     { k: "location", label: "Localisation", icon: MapPin },
   ]
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <PageHeader title="Mon Profil" subtitle="GÃ©rez vos informations personnelles" />
+      <PageHeader title="Mon Profil" subtitle="Gérez vos informations personnelles" />
 
       {/* Profile card */}
       <div className="card flex items-center space-x-5">
@@ -73,7 +73,7 @@ export default function Profile() {
               <Shield className="w-3 h-3 inline mr-1" />{ROLES[user?.role]?.label}
             </span>
             {user?.last_login && (
-              <span className="text-xs text-gray-400">DerniÃ¨re connexion: {formatDateTime(user.last_login)}</span>
+              <span className="text-xs text-gray-400">Dernière connexion: {formatDateTime(user.last_login)}</span>
             )}
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function Profile() {
         <form onSubmit={handleSubmit(onInfo)} className="card space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">PrÃ©nom</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
               <input {...register("first_name")} className="input" />
             </div>
             <div>
@@ -103,7 +103,7 @@ export default function Profile() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">TÃ©lÃ©phone</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
             <input {...register("phone")} className="input" />
           </div>
           <div>
@@ -111,7 +111,7 @@ export default function Profile() {
             <input value={user?.email || ""} disabled className="input bg-gray-50 text-gray-400" />
           </div>
           <button type="submit" disabled={loading} className="btn-primary">
-            <Save className="w-4 h-4" />{loading ? "Enregistrementâ€¦" : "Enregistrer"}
+            <Save className="w-4 h-4" />{loading ? "Enregistrement…" : "Enregistrer"}
           </button>
         </form>
       )}
@@ -125,16 +125,16 @@ export default function Profile() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nouveau mot de passe *</label>
-            <input type="password" {...rPwd("new_password", { required: "Requis", minLength: { value: 8, message: "Min 8 caractÃ¨res" } })} className="input" />
+            <input type="password" {...rPwd("new_password", { required: "Requis", minLength: { value: 8, message: "Min 8 caractères" } })} className="input" />
             {ePwd.new_password && <p className="text-red-500 text-xs mt-1">{ePwd.new_password.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Confirmer *</label>
-            <input type="password" {...rPwd("new_password2", { validate: v => v === pwd || "Mots de passe diffÃ©rents" })} className="input" />
+            <input type="password" {...rPwd("new_password2", { validate: v => v === pwd || "Mots de passe différents" })} className="input" />
             {ePwd.new_password2 && <p className="text-red-500 text-xs mt-1">{ePwd.new_password2.message}</p>}
           </div>
           <button type="submit" disabled={loading} className="btn-primary">
-            <Lock className="w-4 h-4" />{loading ? "Modificationâ€¦" : "Modifier le mot de passe"}
+            <Lock className="w-4 h-4" />{loading ? "Modification…" : "Modifier le mot de passe"}
           </button>
         </form>
       )}
@@ -146,18 +146,18 @@ export default function Profile() {
               <MapPin className="w-5 h-5 text-blue-600" />
               <div>
                 <p className="font-medium text-blue-800 text-sm">
-                  {address || user?.location_address || "Aucune localisation enregistrÃ©e"}
+                  {address || user?.location_address || "Aucune localisation enregistrée"}
                 </p>
                 {(position || user?.latitude) && (
                   <p className="text-xs text-blue-500 mt-0.5">
-                    Lat: {position?.latitude || user?.latitude} â€” Lng: {position?.longitude || user?.longitude}
+                    Lat: {position?.latitude || user?.latitude} - Lng: {position?.longitude || user?.longitude}
                   </p>
                 )}
               </div>
             </div>
             <button onClick={getCurrentPosition} disabled={geoLoading}
               className="btn-primary btn-sm">
-              {geoLoading ? "â€¦" : "Me localiser"}
+              {geoLoading ? "…" : "Me localiser"}
             </button>
           </div>
           {position && (
@@ -167,7 +167,7 @@ export default function Profile() {
             </button>
           )}
           <p className="text-xs text-gray-400 text-center">
-            La gÃ©olocalisation permet de situer votre boutique sur la carte.
+            La géolocalisation permet de situer votre boutique sur la carte.
           </p>
         </div>
       )}

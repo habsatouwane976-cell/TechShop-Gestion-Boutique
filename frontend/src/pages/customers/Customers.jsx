@@ -120,9 +120,9 @@ export default function Customers() {
                       </div>
                     </div>
                   </td>
-                  <td className="text-sm text-gray-600">{c.phone || "—"}</td>
-                  <td className="text-sm text-gray-600">{c.email || "—"}</td>
-                  <td className="text-sm text-gray-600">{c.city || "—"}</td>
+                  <td className="text-sm text-gray-600">{c.phone || "-"}</td>
+                  <td className="text-sm text-gray-600">{c.email || "-"}</td>
+                  <td className="text-sm text-gray-600">{c.city || "-"}</td>
                   <td><span className="badge bg-blue-100 text-blue-700">{c.total_purchases} ventes</span></td>
                   <td className="font-semibold text-emerald-600">{formatCurrency(c.total_spent)}</td>
                   <td>

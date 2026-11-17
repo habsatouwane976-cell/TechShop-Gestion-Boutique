@@ -58,7 +58,7 @@ export default function Activity() {
               {logs.map(log => (
                 <tr key={log.id}>
                   <td className="text-xs text-gray-500 whitespace-nowrap">{formatDateTime(log.created_at)}</td>
-                  <td className="font-medium text-sm">{log.user_name || "—"}</td>
+                  <td className="font-medium text-sm">{log.user_name || "-"}</td>
                   <td>
                     <span className={`badge flex items-center space-x-1 w-fit ${ACTION_COLORS[log.action] || "bg-gray-100 text-gray-600"}`}>
                       {ACTION_ICONS[log.action]}
@@ -67,7 +67,7 @@ export default function Activity() {
                   </td>
                   <td className="text-sm text-gray-600">{log.resource}</td>
                   <td className="text-sm text-gray-600 max-w-xs truncate">{log.description}</td>
-                  <td className="text-xs font-mono text-gray-400">{log.ip_address || "—"}</td>
+                  <td className="text-xs font-mono text-gray-400">{log.ip_address || "-"}</td>
                 </tr>
               ))}
             </tbody>

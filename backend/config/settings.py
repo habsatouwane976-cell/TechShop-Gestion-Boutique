@@ -1,5 +1,5 @@
 """
-BoutiqueManager — Configuration Django
+BoutiqueManager - Configuration Django
 Compatible: Python 3.11+, Django 5.1
 """
 from pathlib import Path

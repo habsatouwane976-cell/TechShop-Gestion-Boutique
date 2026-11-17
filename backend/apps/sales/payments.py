@@ -26,7 +26,7 @@ def process_online_payment(sale, method, phone=''):
     """
     reference = f"PAY-{uuid.uuid4().hex[:10].upper()}"
     logger.info(
-        "Paiement %s accepté pour %s (%s FCFA) — réf. %s",
+        "Paiement %s accepté pour %s (%s FCFA) - réf. %s",
         method, sale.invoice_number, sale.total_amount, reference,
     )
     return True, reference

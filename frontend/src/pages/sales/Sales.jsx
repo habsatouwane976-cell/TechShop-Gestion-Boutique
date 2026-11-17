@@ -8,7 +8,7 @@ import LoadingSpinner from "../../components/common/LoadingSpinner"
 import StatusBadge from "../../components/common/StatusBadge"
 import Pagination from "../../components/common/Pagination"
 import EmptyState from "../../components/common/EmptyState"
-import { formatCurrency, formatDateTime } from "../../utils/formatters"
+import { formatCurrency, formatDateTime, cleanLabel } from "../../utils/formatters"
 import { PAYMENT_METHODS } from "../../utils/constants"
 import { Plus, FileText, Download, ShoppingCart, Eye, X } from "lucide-react"
 import toast from "react-hot-toast"
@@ -135,7 +135,7 @@ const handleApprove = async (id) => {
                   <td className="text-sm text-gray-600">{s.cashier_name}</td>
                   <td>
                     <span className="text-sm">
-                      {PAYMENT_METHODS[s.payment_method]?.icon} {PAYMENT_METHODS[s.payment_method]?.label || s.payment_method}
+                      {PAYMENT_METHODS[s.payment_method]?.icon} {PAYMENT_METHODS[s.payment_method]?.label || cleanLabel(s.payment_method)}
                     </span>
                   </td>
                   <td className="font-bold text-gray-900">{formatCurrency(s.total_amount)}</td>

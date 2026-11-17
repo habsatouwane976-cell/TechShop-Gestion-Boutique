@@ -23,9 +23,9 @@ function mountBubble(variables) {
     prefilledVariables: variables,
     theme: {
       button: {
-        backgroundColor: PRIMARY,
-        iconColor: "#ffffff",
-        customIconSrc: `${window.location.origin}/chatbot-icon.svg`,
+        backgroundColor: "#ffffff",
+        iconColor: PRIMARY,
+        customIconSrc: `${window.location.origin}/icons/icon-128.png`,
         size: "large",
       },
       previewMessage: {
@@ -50,7 +50,11 @@ export default function ChatbotWidget() {
   const variablesKey = JSON.stringify(prefilledVariables(user))
 
   useEffect(() => {
-    if (!TYPEBOT_ID || isStaff || isWaitingForProfile) return undefined
+    if (!TYPEBOT_ID) {
+      console.warn("Chatbot désactivé : VITE_TYPEBOT_ID est vide dans frontend/.env")
+      return undefined
+    }
+    if (isStaff || isWaitingForProfile) return undefined
     mountBubble(JSON.parse(variablesKey))
     return () => document.querySelectorAll("typebot-bubble").forEach(node => node.remove())
   }, [isStaff, isWaitingForProfile, variablesKey])

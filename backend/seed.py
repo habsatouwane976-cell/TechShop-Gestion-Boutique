@@ -1,5 +1,5 @@
 """
-BoutiqueManager — TechShop Dakar — Boutique Électronique
+BoutiqueManager - TechShop Dakar - Boutique Électronique
 Données de démonstration avec produits exacts
 Usage Windows : python manage.py shell -c "exec(open('seed.py').read())"
 Usage Linux   : python manage.py shell < seed.py
@@ -22,7 +22,7 @@ from apps.customers.models import Customer
 from apps.sales.models import Sale, SaleItem
 from apps.notifications.models import Notification
 
-print("🏪 Initialisation — TechShop Dakar (Électronique)")
+print("🏪 Initialisation - TechShop Dakar (Électronique)")
 print("=" * 55)
 
 # ── Utilisateurs ──────────────────────────────────────────
@@ -72,7 +72,7 @@ for name, icon, color in CATS:
     c, created = Category.objects.get_or_create(
         name=name,
         defaults={"icon": icon, "color": color,
-                  "description": f"Produits électroniques — {name}"}
+                  "description": f"Produits électroniques - {name}"}
     )
     cats[name] = c
 print(f"  ✅ {len(cats)} catégories créées")
@@ -147,7 +147,7 @@ for ref, name, cat_name, purchase, selling, qty, min_stock, sup_idx, img_file in
             "min_stock": min_stock,
             "supplier": suppliers[sup_idx],
             "description": (
-                f"{name} — Produit électronique de qualité, "
+                f"{name} - Produit électronique de qualité, "
                 f"disponible chez TechShop Dakar. "
                 f"Prix: {selling:,} FCFA. Stock: {qty} unités."
             ),
@@ -167,7 +167,7 @@ for ref, name, cat_name, purchase, selling, qty, min_stock, sup_idx, img_file in
     products.append(p)
     status = "créé" if created else "existant"
     margin = round((selling - purchase) / purchase * 100, 1)
-    print(f"  {'✅' if created else '✓ '} [{ref}] {name} — {selling:,} FCFA (marge: {margin}%)")
+    print(f"  {'✅' if created else '✓ '} [{ref}] {name} - {selling:,} FCFA (marge: {margin}%)")
 
 print(f"\n  📦 {len(products)} produits électroniques prêts")
 
@@ -297,11 +297,11 @@ print(f"  ✅ {created_sales} ventes créées (30 jours)")
 low = [p for p in products if p.quantity <= p.min_stock]
 for p in low:
     Notification.objects.get_or_create(
-        user=admin, title=f"⚠️ Stock bas — {p.name}",
+        user=admin, title=f"⚠️ Stock bas - {p.name}",
         defaults={
             "type": "low_stock",
             "message": (
-                f"«{p.name}» (Réf: {p.reference}) — "
+                f"«{p.name}» (Réf: {p.reference}) - "
                 f"Stock: {p.quantity} unité(s) / Minimum: {p.min_stock}. "
                 "Veuillez réapprovisionner."
             ),
@@ -313,7 +313,7 @@ if low:
 
 print("")
 print("=" * 60)
-print("  🎉 TECHSHOP DAKAR — INITIALISATION COMPLÈTE !")
+print("  🎉 TECHSHOP DAKAR - INITIALISATION COMPLÈTE !")
 print("=" * 60)
 print(f"  📦 {len(products)} produits électroniques")
 print(f"  🗂️  {len(cats)} catégories")

@@ -1,4 +1,4 @@
-"""BoutiqueManager — URL Configuration principale"""
+"""BoutiqueManager - URL Configuration principale"""
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings

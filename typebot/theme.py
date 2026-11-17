@@ -15,7 +15,7 @@ def build_theme(site_url):
         },
         'chat': {
             'roundness': 'large',
-            'hostAvatar': {'isEnabled': True, 'url': f'{site_url}/chatbot-avatar.svg'},
+            'hostAvatar': {'isEnabled': True, 'url': f'{site_url}/icons/icon-64.png'},
             'guestAvatar': {'isEnabled': False},
             'hostBubbles': {'backgroundColor': SURFACE, 'color': INK},
             'guestBubbles': {'backgroundColor': PRIMARY, 'color': '#FFFFFF'},

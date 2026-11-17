@@ -326,8 +326,8 @@ class ExportExcelView(APIView):
                 vals = [
                     s.invoice_number,
                     s.created_at.strftime('%d/%m/%Y %H:%M'),
-                    s.customer.name if s.customer else '—',
-                    s.cashier.get_full_name() if s.cashier else '—',
+                    s.customer.name if s.customer else '-',
+                    s.cashier.get_full_name() if s.cashier else '-',
                     s.get_payment_method_display(),
                     float(s.subtotal), float(s.discount_amount),
                     float(s.tax_amount), float(s.total_amount),
@@ -391,8 +391,8 @@ class ExportExcelView(APIView):
 
                 vals = [
                     p.reference, p.name,
-                    p.category.name if p.category else '—',
-                    p.supplier.name if p.supplier else '—',
+                    p.category.name if p.category else '-',
+                    p.supplier.name if p.supplier else '-',
                     float(p.purchase_price), float(p.selling_price),
                     p.quantity, p.min_stock, status_txt,
                     float(p.stock_value), float(p.margin),

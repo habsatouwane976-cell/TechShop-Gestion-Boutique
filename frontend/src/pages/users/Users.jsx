@@ -74,7 +74,7 @@ export default function Users() {
                     </div>
                   </td>
                   <td className="text-sm text-gray-600">{u.email}</td>
-                  <td className="text-sm text-gray-600">{u.phone || "—"}</td>
+                  <td className="text-sm text-gray-600">{u.phone || "-"}</td>
                   <td>
                     <span className={`badge ${ROLES[u.role]?.color || "bg-gray-100 text-gray-600"}`}>
                       <Shield className="w-3 h-3 inline mr-1" />{ROLES[u.role]?.label || u.role}

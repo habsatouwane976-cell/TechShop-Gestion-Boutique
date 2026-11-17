@@ -1,5 +1,6 @@
 """Entrées validées et sorties compactes pour Typebot."""
 import json
+import re
 
 from django.conf import settings
 from rest_framework import serializers
@@ -61,7 +62,7 @@ def public_base_url(request):
 
 def product_card(product, base_url):
     image = product.image.url if product.image else PLACEHOLDER_IMAGE
-    description = (product.description or '').split(' — ')[0].strip()
+    description = re.split(r'\s[-\u2014]\s', product.description or '')[0].strip()
     return {
         'id': product.id,
         'reference': product.reference,

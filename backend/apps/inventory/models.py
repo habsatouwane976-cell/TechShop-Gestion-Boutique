@@ -54,7 +54,7 @@ class StockMovement(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.get_movement_type_display()} — {self.product.name} ({self.quantity})"
+        return f"{self.get_movement_type_display()} - {self.product.name} ({self.quantity})"
 
     @property
     def total_value(self):
@@ -97,7 +97,7 @@ class Supply(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Appro {self.reference} — {self.supplier.name}"
+        return f"Appro {self.reference} - {self.supplier.name}"
 
     def calculate_total(self):
         self.total_amount = sum(item.subtotal for item in self.items.all())
